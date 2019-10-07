@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<root name ="Desires"> 
+  <desire name ="Learning">
+    <description>
+      This person likes to raise their skills and learn other skills.
+    </description>
+    <max_level max="10"/>
+    <is_a_buff result="true"/>
+  </desire>
+  <desire name ="Fighting">
+    <description>
+      This person like to fight, and trains very well at it. Makes for a good soilder.
+    </description>
+    <max_level max="7"/>
+    <is_a_buff result="true"/>
+  </desire>
+  <desire name="Relaxing">
+    <description>
+      This person likes to not do anything.
+    </description>
+    <max_level max="5"/>
+    <is_a_buff result="false"/>
+  </desire>
+</root>

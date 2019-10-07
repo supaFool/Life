@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skills>
+    <name>Sample
+        <info>
+            <!--
+            Going to contain the Description of the Skill
+             -->
+        </info>
+        <level_multiplier>
+            <!--
+                This is the - || + to be added to the static skill offset ie: every action has a base xp value
+                of x, So this var would be the offset to that [making stuff give less xp] so {One chop of a tree would be xp += (x + y)}
+            -->
+        </level_multiplier>
+        <skills_affected>
+            <!--
+            other skills this skill influences
+            -->
+
+        </skills_affected>
+
+    </name>
+    <name>Woodcutting
+        <info>
+            Skill used to obtain wood. Also assists in Carpentry
+        </info>
+        <skills_affected>
+            <subSkill>
+                Carpentry
+            </subSkill>
+        </skills_affected>
+    </name>
+    <name>Imaginative
+        <info>
+            Problem solving, Art,
+        </info>
+    </name>
+    <name>Creativeness</name>
+    <name>Salvaging</name>
+    <name>Carpentry</name>
+</skills>

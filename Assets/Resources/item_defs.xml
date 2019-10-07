@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Items are anything in-game that is obtainable by player-->
+<item_props>
+    <!--
+    ========================FOOD==============================
+    -->
+    <food>
+        <type id="fruit">
+            <name>Elder Berry</name>
+            <weight>.1</weight>
+
+
+        </type>
+        <type id="meat">
+            <name>Deer Steaks</name>
+            <weight>1.5</weight>
+            <poison_prob>
+                <cooked>.1</cooked>
+                <raw>.7</raw>
+            </poison_prob>
+            <cooking_time>15</cooking_time>
+            <desc>Morbi nec fringilla nulla, sed sagittis urna. Aliquam erat volutpat. Proin convallis ullamcorper orci
+                a commodo. Donec sed urna fringilla, consequat mi vitae, rhoncus dui. Aliquam vehicula eros et libero
+                cursus ullamcorper eu ac velit. Aenean luctus cursus arcu et malesuada. Pellentesque egestas quam vel
+                ante pretium tristique.
+            </desc>
+        </type>
+
+        <type id="meat">
+            <name>Pork Steaks</name>
+            <weight>1</weight>
+            <poison_prob>
+                <cooked>.2</cooked>
+                <raw>.8</raw>
+            </poison_prob>
+            <cooking_time>18</cooking_time>
+            <desc>Morbi nec fringilla nulla, sed sagittis urna. Aliquam erat volutpat. Proin convallis ullamcorper orci
+                a commodo. Donec sed urna fringilla, consequat mi vitae, rhoncus dui. Aliquam vehicula eros et libero
+                cursus ullamcorper eu ac velit. Aenean luctus cursus arcu et malesuada. Pellentesque egestas quam vel
+                ante pretium tristique.
+            </desc>
+        </type>
+
+        <type id="veggies">
+            <name>Corn</name>
+            <weight>.2</weight>
+        </type>
+
+    </food>
+    <!--
+    ========================WEAPONS==============================
+    -->
+    <weapons>
+
+        <type id="one_handed">
+            <name>Dagger</name>
+            <weight>4.75</weight>
+        </type>
+
+        <type id="two_handed">
+            <name>Sword</name>
+        </type>
+
+    </weapons>
+    <!--
+    ========================ARMOUR==============================
+    -->
+    <armour>
+        <type id="head">
+            <name>Hat</name>
+            <duribility></duribility>
+            <required_lvl></required_lvl>
+            <reliability></reliability>
+            <value></value>
+            <desc></desc>
+
+        </type>
+        <type id="body">
+            <name>Sweater</name>
+        </type>
+        <type id="legs">
+            <name>Pants</name>
+        </type>
+        <type id="feet">
+            <name>Boots</name>
+        </type>
+        <type id="back">
+            <name>Backpack</name>
+        </type>
+    </armour>
+    <!--
+    ========================RESOURCES==============================
+    -->
+    <resources>
+        <name>Coal</name>
+    </resources>
+
+
+</item_props>
