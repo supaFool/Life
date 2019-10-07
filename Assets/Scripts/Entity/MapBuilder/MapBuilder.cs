@@ -47,16 +47,6 @@ public class MapBuilder : MonoBehaviour
     private void Awake()
     {
         m_mapSettings = new MapSettings();
-        //m_map = GetComponentInParent<Map>();
-
-        //Check the Map
-        //Debug.Log(m_map.TEST());
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
     }
 
     // Update is called once per frame
@@ -103,7 +93,6 @@ public class MapBuilder : MonoBehaviour
                 if (m_grid[x, y] == 1)
                 {
                     c++;
-                    Debug.Log("PaintingTiles + " + c);
                     TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
                 }
 
