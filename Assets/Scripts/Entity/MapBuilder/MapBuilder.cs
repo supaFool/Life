@@ -98,7 +98,7 @@ public class MapBuilder : MonoBehaviour
 
                 if (m_grid[x, y] == 0)
                 {
-                BottomMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), BottomTile);
+                    BottomMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), BottomTile);
                 }
             }
         }
@@ -124,7 +124,7 @@ public class MapBuilder : MonoBehaviour
                     else
                     {
                         //Draw Border
-                        // neighbor++;
+                        neighbor++;
                     }
                 }
                 if (oldmap[x, y] == 1)
@@ -155,7 +155,7 @@ public class MapBuilder : MonoBehaviour
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
-            { 
+            {
                 m_grid[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
             }
         }
