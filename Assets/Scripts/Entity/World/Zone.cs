@@ -3,6 +3,7 @@
     //Testing
     private string m_zoneName;
     private int m_zoneID;
+   
 
     public Zone(string zoneName)
     {

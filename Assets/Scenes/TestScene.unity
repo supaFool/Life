@@ -301,7 +301,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15.11
+  orthographic size: 266.6275
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -575,6 +575,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d09339349947c574eb1fd8658e3a8a6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaleFirstName: []
+  FemaleFirstName: []
+  LastName: []
+  Adjs: []
+  Words: []
+  Advs: []
+  Nouns: []
+  Streets: []
+  CityNames: []
+  StateAbbr: []
+  CountyName: []
+  Population: []
+  Zip: []
   Occupation: []
   OccDesc: []
   Map: []
@@ -653,9 +666,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TopMap: {fileID: 992030717}
   BottomMap: {fileID: 339850481}
-  TopTile: {fileID: 11400000, guid: e23b2bd3acbc1634d9d6c8c5be5c2edf, type: 2}
-  BottomTile: {fileID: 11400000, guid: f14087bf11969c84f84cbef4f93a24e6, type: 2}
-  m_activeChance: 36
+  TopTile: {fileID: 11400000, guid: f14087bf11969c84f84cbef4f93a24e6, type: 2}
+  BottomTile: {fileID: 11400000, guid: e23b2bd3acbc1634d9d6c8c5be5c2edf, type: 2}
+  m_activeChance: 67
   BirthLimit: 3
   DeathLimit: 2
   Samples: 1
