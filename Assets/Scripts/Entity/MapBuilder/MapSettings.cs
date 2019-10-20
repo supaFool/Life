@@ -3,8 +3,8 @@
     private string m_worldName;
 
     //Main Map Size
-    public static int MapWidth = 500;
-    public static int MapHeight = 500;
+    public static int MapWidth = 2000;
+    public static int MapHeight = 2000;
     public static int MapZLayers = 0;
 
     #region ZoneGetters

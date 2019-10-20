@@ -8,6 +8,7 @@ public class MapBuilder : MonoBehaviour
     private MapSettings m_mapSettings;
     private MapTile m_mapTile;
     //private Map m_map;
+    private Zone m_currentZone; 
 
     [SerializeField]
     private Tilemap TopMap;
@@ -32,10 +33,10 @@ public class MapBuilder : MonoBehaviour
     public int Samples;
     private int counter = 0;
 
-    private int[,] m_grid;
+    private int[,] m_finalMap;
     public Vector3Int MapSize;
 
-    public int GridSize { get => m_grid.Length; }
+    public int GridSize { get => m_finalMap.Length; }
 
     #endregion
 
@@ -47,6 +48,7 @@ public class MapBuilder : MonoBehaviour
     private void Awake()
     {
         m_mapSettings = new MapSettings();
+        m_currentZone = new Zone("TestZone");
     }
 
     // Update is called once per frame
@@ -74,29 +76,29 @@ public class MapBuilder : MonoBehaviour
 
 
 
-        if (m_grid == null)
+        if (m_finalMap == null)
         {
             Debug.Log("Creating Grid");
-            m_grid = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+            m_finalMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             InitPos();
         }
 
         for (int i = 0; i < Samples; i++)
         {
-            m_grid = GetTilePos(m_grid);
+            m_finalMap = GetTilePos(m_finalMap);
         }
 
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-                if (m_grid[x, y] == 1)
+                if (m_finalMap[x, y] == 1)
                 {
                     c++;
-                    TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
+                    TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile)
                 }
 
-                if (m_grid[x, y] == 0)
+                if (m_finalMap[x, y] == 0)
                 {
                     BottomMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), BottomTile);
                 }
@@ -104,7 +106,7 @@ public class MapBuilder : MonoBehaviour
         }
     }
 
-    private int[,] GetTilePos(int[,] oldmap)
+    private int[,] GetTilePos(int[,] tempMap)
     {
         int[,] newMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
         int neighbor;
@@ -119,7 +121,7 @@ public class MapBuilder : MonoBehaviour
                     if (b.x == 0 && b.y == 0) continue;
                     if (x + b.x >= 0 && x + b.x < MapSettings.MapWidth && y + b.y >= 0 && y + b.y < MapSettings.MapHeight)
                     {
-                        neighbor += oldmap[x + b.x, y + b.y];
+                        neighbor += tempMap[x + b.x, y + b.y];
                     }
                     else
                     {
@@ -127,7 +129,7 @@ public class MapBuilder : MonoBehaviour
                         neighbor++;
                     }
                 }
-                if (oldmap[x, y] == 1)
+                if (tempMap[x, y] == 1)
                 {
                     if (neighbor < DeathLimit) newMap[x, y] = 0;
                     else
@@ -135,7 +137,7 @@ public class MapBuilder : MonoBehaviour
                         newMap[x, y] = 1;
                     }
                 }
-                if (oldmap[x, y] == 0)
+                if (tempMap[x, y] == 0)
                 {
                     if (neighbor > BirthLimit) newMap[x, y] = 1;
                     else
@@ -156,7 +158,7 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-                m_grid[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
+                m_finalMap[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
             }
         }
     }
@@ -169,7 +171,7 @@ public class MapBuilder : MonoBehaviour
         if (v)
         {
             Debug.Log("Finished Clearing all");
-            m_grid = null;
+            m_finalMap = null;
         }
     }
 
