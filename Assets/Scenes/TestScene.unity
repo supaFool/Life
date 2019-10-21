@@ -823,11 +823,11 @@ MonoBehaviour:
   m_activeChance: 66
   BirthLimit: 3
   DeathLimit: 2
-  Samples: 1
+  Samples: 2
   ForestActiveChance: 54
   ForestBirthLimit: 3
-  ForestDeathLimit: 2
-  ForestSamples: 1
+  ForestDeathLimit: 8
+  ForestSamples: 3
   MapSize: {x: 100, y: 100, z: 0}
   SamplesText: {fileID: 0}
 --- !u!114 &1501650117
