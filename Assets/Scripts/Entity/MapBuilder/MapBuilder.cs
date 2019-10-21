@@ -7,7 +7,8 @@ public class MapBuilder : MonoBehaviour
     [SerializeField]
     private Grid MapGrid;
     //How much space to add between grids After map is built
-    private float m_cellGap = 3f;
+    private float m_cellGap = 1f;
+    private float m_currentCellGap = 0;
     private int m_iterations = 0;
 
     #region Vars
@@ -91,13 +92,17 @@ public class MapBuilder : MonoBehaviour
         {
             ClearMap(true);
             running = false;
+            m_iterations = 0;
+            m_currentCellGap = 0;
             MapGrid.cellGap = new Vector3(0, 0, 0);
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             m_iterations++;
-            MapGrid.cellGap = new Vector3(m_cellGap, m_cellGap, 0);
+            m_currentCellGap = m_cellGap * m_iterations;
+            MapGrid.cellGap = new Vector3(m_currentCellGap, m_currentCellGap, 0);
+            Debug.Log(m_currentCellGap);
         }
     }
     #endregion
@@ -141,7 +146,6 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-                Debug.Log(m_treeMap[x, y]);
 
                 if (m_treeMap[x, y] == 3)
                 {
@@ -158,7 +162,6 @@ public class MapBuilder : MonoBehaviour
 
         if (m_terrainMap == null)
         {
-            Debug.Log("Creating Grid");
             m_terrainMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             m_treeMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             InitPos();
