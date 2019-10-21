@@ -106,9 +106,8 @@ public class MapBuilder : MonoBehaviour
             update = true;
             m_iterations++;
             m_currentCellGap =  m_iterations;
-            var CG = MapGrid.cellGap;
-            MapGrid.cellGap = new Vector3(m_iterations - 1, m_iterations - 1, 0);
-            MapGrid.cellSize = new Vector3(m_iterations, m_iterations, 0);
+            MapGrid.cellGap = new Vector3((float)m_iterations, (float)m_iterations, 0);
+            //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
             Debug.Log(TopMap.cellGap);
 
             var oldTerraMap = m_terrainMap;
@@ -154,28 +153,26 @@ public class MapBuilder : MonoBehaviour
             m_terrainMap = BuildTerrain(m_terrainMap, update);
         }
 
-        for (int x = 0; x < MapSettings.MapWidth; x++)
+        for (int x = 0; x < m_terrainMap.GetLength(0); x++)
         {
-            for (int y = 0; y < MapSettings.MapHeight; y++)
+            for (int y = 0; y < m_terrainMap.GetLength(1); y++)
             {
                 m_treeMap[x, y] = 0;
 
                 if (m_terrainMap[x, y] == 1)
                 {
-                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), TopTile);
+                    if (update)
+                    {
+                    //TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) * m_iterations) / 2, -y + (m_terrainMap.GetLength(1) * m_iterations) / 2, 0), FiveTile);
+                    }
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), TopTile);
 
                     m_treeMap[x, y] = 9;
                 }
 
                 if (m_terrainMap[x, y] == 0)
                 {
-                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), BottomTile);
-                    m_treeMap[x, y] = 0;
-                }
-
-                if (m_terrainMap[x, y] == 5)
-                {
-                    BottomMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), BottomTile);
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), BottomTile);
                     m_treeMap[x, y] = 0;
                 }
             }
@@ -238,7 +235,7 @@ public class MapBuilder : MonoBehaviour
                     foreach (var b in bounds.allPositionsWithin)
                     {
                         if (b.x == 0 && b.y == 0) continue;
-                        if (x + b.x >= 0 && x + b.x < MapSettings.MapWidth && y + b.y >= 0 && y + b.y < MapSettings.MapHeight)
+                        if (x + b.x >= 0 && x + b.x < tempMap.GetLength(0) && y + b.y >= 0 && y + b.y <tempMap.GetLength(1))
                         {
                             neighbor += tempMap[x + b.x, y + b.y];
                         }
@@ -270,7 +267,7 @@ public class MapBuilder : MonoBehaviour
         }
         else
         {
-            updatedMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+            updatedMap = new int[m_terrainMap.GetLength(0), m_terrainMap.GetLength(1)];
             for (int x = 0; x < MapSettings.MapWidth; x++)
             {
                 for (int y = 0; y < MapSettings.MapHeight; y++)
@@ -279,7 +276,7 @@ public class MapBuilder : MonoBehaviour
                     foreach (var b in bounds.allPositionsWithin)
                     {
                         if (b.x == 0 && b.y == 0) continue;
-                        if (x + b.x >= 0 && x + b.x < MapSettings.MapWidth && y + b.y >= 0 && y + b.y < MapSettings.MapHeight)
+                        if (x + b.x >= 0 && x + b.x < m_terrainMap.GetLength(0) && y + b.y >= 0 && y + b.y < m_terrainMap.GetLength(1))
                         {
                             neighbor += tempMap[x + b.x, y + b.y];
                         }
