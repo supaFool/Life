@@ -30,6 +30,8 @@ public class MapBuilder : MonoBehaviour
     private Tile TreeTile;
     [SerializeField]
     private Tile BottomTile;
+    [SerializeField]
+    private Tile FiveTile;
 
     private bool running;
 
@@ -102,8 +104,11 @@ public class MapBuilder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             update = true;
-            m_currentCellGap = m_cellGap * m_iterations;
-            MapGrid.cellGap = new Vector3(m_currentCellGap, m_currentCellGap, 0);
+            m_iterations++;
+            m_currentCellGap =  m_iterations;
+            var CG = MapGrid.cellGap;
+            MapGrid.cellGap = new Vector3(m_iterations - 1, m_iterations - 1, 0);
+            MapGrid.cellSize = new Vector3(m_iterations, m_iterations, 0);
             Debug.Log(TopMap.cellGap);
 
             var oldTerraMap = m_terrainMap;
@@ -129,9 +134,10 @@ public class MapBuilder : MonoBehaviour
                 }
             }
 
+            TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
             SimulateTerrain(Samples);
 
-            m_iterations++;
+           // MapGrid.cellGap = CG;
         }
     }
     #endregion
@@ -156,14 +162,20 @@ public class MapBuilder : MonoBehaviour
 
                 if (m_terrainMap[x, y] == 1)
                 {
-                    TopMap.SetTile(new Vector3Int(-x + (MapSettings.MapWidth + (int)m_currentCellGap) / 2, -y + (MapSettings.MapHeight + (int)m_currentCellGap) / 2, 0), TopTile);
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), TopTile);
 
                     m_treeMap[x, y] = 9;
                 }
 
                 if (m_terrainMap[x, y] == 0)
                 {
-                    BottomMap.SetTile(new Vector3Int(-x + (MapSettings.MapWidth + (int)m_currentCellGap) / 2, -y + (MapSettings.MapHeight + (int)m_currentCellGap) / 2, 0), BottomTile);
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), BottomTile);
+                    m_treeMap[x, y] = 0;
+                }
+
+                if (m_terrainMap[x, y] == 5)
+                {
+                    BottomMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) + (int)m_iterations) / 2, -y + (m_terrainMap.GetLength(1) + (int)m_iterations) / 2, 0), BottomTile);
                     m_treeMap[x, y] = 0;
                 }
             }
