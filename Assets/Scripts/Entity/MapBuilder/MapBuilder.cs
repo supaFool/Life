@@ -15,7 +15,11 @@ public class MapBuilder : MonoBehaviour
     [SerializeField]
     private Tilemap BottomMap;
     [SerializeField]
+    private Tilemap TreeMap;
+    [SerializeField]
     private Tile TopTile;
+    [SerializeField]
+    private Tile TreeTile;
     [SerializeField]
     private Tile BottomTile;
 
@@ -31,12 +35,25 @@ public class MapBuilder : MonoBehaviour
 
     [Range(1, 10)]
     public int Samples;
+
+    [Range(1, 100)]
+    public int ForestActiveChance;
+
+    [Range(1, 8)]
+    public int ForestBirthLimit;
+
+    [Range(1, 8)]
+    public int ForestDeathLimit;
+
+    [Range(1, 10)]
+    public int ForestSamples;
     private int counter = 0;
 
-    private int[,] m_finalMap;
+    private int[,] m_terrainMap;
+    private int[,] m_treeMap;
     public Vector3Int MapSize;
 
-    public int GridSize { get => m_finalMap.Length; }
+    public int GridSize { get => m_terrainMap.Length; }
 
     #endregion
 
@@ -59,6 +76,7 @@ public class MapBuilder : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Simulate(Samples);
+            SimulateTrees(ForestSamples);
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -68,6 +86,26 @@ public class MapBuilder : MonoBehaviour
     }
     #endregion
 
+    public void SimulateTrees(int samples)
+    {
+        for (int i = 0; i < samples; i++)
+        {
+            m_treeMap = BuildForest(m_treeMap);
+        }
+        for (int x = 0; x < MapSettings.MapWidth; x++)
+        {
+            for (int y = 0; y < MapSettings.MapHeight; y++)
+            {
+                Debug.Log(m_treeMap[x, y]);
+
+                if (m_treeMap[x, y] == 3)
+                {
+                    TreeMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TreeTile);
+                }
+            }
+        }
+    }
+
     public void Simulate(int samples)
     {
         int c = 0;
@@ -76,37 +114,42 @@ public class MapBuilder : MonoBehaviour
 
 
 
-        if (m_finalMap == null)
+        if (m_terrainMap == null)
         {
             Debug.Log("Creating Grid");
-            m_finalMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+            m_terrainMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+            m_treeMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             InitPos();
         }
 
         for (int i = 0; i < Samples; i++)
         {
-            m_finalMap = GetTilePos(m_finalMap);
+            m_terrainMap = BuildTerrain(m_terrainMap);
         }
 
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-                if (m_finalMap[x, y] == 1)
+                if (m_terrainMap[x, y] == 1)
                 {
                     c++;
-                    TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile)
+                    TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
+
+                    m_treeMap[x, y] = 9;
                 }
 
-                if (m_finalMap[x, y] == 0)
+                if (m_terrainMap[x, y] == 0)
                 {
                     BottomMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), BottomTile);
                 }
             }
         }
+
+        
     }
 
-    private int[,] GetTilePos(int[,] tempMap)
+    private int[,] BuildTerrain(int[,] tempMap)
     {
         int[,] newMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
         int neighbor;
@@ -139,7 +182,7 @@ public class MapBuilder : MonoBehaviour
                 }
                 if (tempMap[x, y] == 0)
                 {
-                    if (neighbor > BirthLimit) newMap[x, y] = 1;
+                    if (neighbor > BirthLimit) newMap[x, y] = 0;
                     else
                     {
                         newMap[x, y] = 0;
@@ -147,6 +190,61 @@ public class MapBuilder : MonoBehaviour
                 }
             }
         }
+
+        return newMap;
+
+
+    } private int[,] BuildForest(int[,] tempMap)
+    {
+        int[,] newMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+        int neighbor;
+        BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
+
+        
+
+        for (int x = 0; x < MapSettings.MapWidth; x++)
+        {
+            for (int y = 0; y < MapSettings.MapHeight; y++)
+            {
+                //Init Treemap
+                if (m_treeMap[x,y] == 9)
+                {
+                    m_treeMap[x, y] = Random.Range(1, 101) < ForestActiveChance ? 3 : 4;
+                }
+                neighbor = 0;
+                foreach (var b in bounds.allPositionsWithin)
+                {
+                    if (b.x == 0 && b.y == 0) continue;
+                    if (x + b.x >= 0 && x + b.x < MapSettings.MapWidth && y + b.y >= 0 && y + b.y < MapSettings.MapHeight)
+                    {
+                        neighbor += tempMap[x + b.x, y + b.y];
+                    }
+                    else
+                    {
+                        //Draw Border
+                        //neighbor++;
+                    }
+                }
+                if (tempMap[x, y] == 3)
+                {
+                    if (neighbor < ForestDeathLimit) newMap[x, y] = 4;
+                    else
+                    {
+                        newMap[x, y] = 3;
+                    }
+                }
+                if (tempMap[x, y] == 4)
+                {
+                    if (neighbor > ForestBirthLimit) newMap[x, y] = 4;
+                    else
+                    {
+                        newMap[x, y] = 4;
+                    }
+                }
+            }
+        }
+
+
 
         return newMap;
     }
@@ -158,7 +256,7 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-                m_finalMap[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
+                m_terrainMap[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
             }
         }
     }
@@ -167,11 +265,12 @@ public class MapBuilder : MonoBehaviour
     {
         TopMap.ClearAllTiles();
         BottomMap.ClearAllTiles();
+        TreeMap.ClearAllTiles();
 
         if (v)
         {
             Debug.Log("Finished Clearing all");
-            m_finalMap = null;
+            m_terrainMap = null;
         }
     }
 
