@@ -4,6 +4,12 @@ using UnityEngine.UI;
 
 public class MapBuilder : MonoBehaviour
 {
+    [SerializeField]
+    private Grid MapGrid;
+    //How much space to add between grids After map is built
+    private float m_cellGap = 3f;
+    private int m_iterations = 0;
+
     #region Vars
     private MapSettings m_mapSettings;
     private MapTile m_mapTile;
@@ -85,6 +91,13 @@ public class MapBuilder : MonoBehaviour
         {
             ClearMap(true);
             running = false;
+            MapGrid.cellGap = new Vector3(0, 0, 0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            m_iterations++;
+            MapGrid.cellGap = new Vector3(m_cellGap, m_cellGap, 0);
         }
     }
     #endregion
@@ -184,6 +197,14 @@ public class MapBuilder : MonoBehaviour
                     else
                     {
                         newMap[x, y] = 1;
+                    }
+                }
+                if (tempMap[x, y] == 0)
+                {
+                    if (neighbor > BirthLimit) newMap[x, y] = 1;
+                    else
+                    {
+                        newMap[x, y] = 0;
                     }
                 }
             }
