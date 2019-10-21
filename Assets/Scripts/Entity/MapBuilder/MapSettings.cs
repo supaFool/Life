@@ -3,8 +3,8 @@
     private string m_worldName;
 
     //Main Map Size
-    public static int MapWidth = 250;
-    public static int MapHeight = 200;
+    public static int MapWidth = 50;
+    public static int MapHeight = 50;
     public static int MapZLayers = 0;
 
     #region ZoneGetters
@@ -32,5 +32,5 @@
 
     public string WorldName { get => m_worldName; set => m_worldName = value; }
 
- 
+
 }

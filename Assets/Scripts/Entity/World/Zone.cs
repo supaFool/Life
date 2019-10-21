@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-public class Zone : Region
+﻿public class Zone : Region
 {
     //Testing
     private string m_zoneName;
