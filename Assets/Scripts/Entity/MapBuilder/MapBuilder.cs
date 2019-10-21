@@ -76,7 +76,7 @@ public class MapBuilder : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Simulate(Samples);
-            SimulateTrees(ForestSamples);
+            //SimulateTrees(ForestSamples);
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -127,6 +127,8 @@ public class MapBuilder : MonoBehaviour
             m_terrainMap = BuildTerrain(m_terrainMap);
         }
 
+
+
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
@@ -146,6 +148,7 @@ public class MapBuilder : MonoBehaviour
             }
         }
 
+        SimulateTrees(ForestSamples);
         
     }
 
