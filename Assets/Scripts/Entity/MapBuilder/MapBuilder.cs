@@ -10,6 +10,7 @@ public class MapBuilder : MonoBehaviour
     private float m_cellGap = 1f;
     private float m_currentCellGap = 0;
     private int m_iterations = 0;
+    private bool update = false;
 
     #region Vars
     private MapSettings m_mapSettings;
@@ -29,6 +30,8 @@ public class MapBuilder : MonoBehaviour
     private Tile TreeTile;
     [SerializeField]
     private Tile BottomTile;
+    [SerializeField]
+    private Tile FiveTile;
 
     private bool running;
 
@@ -83,6 +86,7 @@ public class MapBuilder : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            update = false;
             Simulate();
             running = true;
             //SimulateTrees(ForestSamples);
@@ -99,37 +103,76 @@ public class MapBuilder : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            update = true;
             m_iterations++;
-            m_currentCellGap = m_cellGap * m_iterations;
-            MapGrid.cellGap = new Vector3(m_currentCellGap, m_currentCellGap, 0);
-            Debug.Log(m_currentCellGap);
+            m_currentCellGap =  m_iterations;
+            MapGrid.cellGap = new Vector3((float)m_iterations / 33f, (float)m_iterations / 33f, 0);
+            //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
+            Debug.Log(TopMap.cellGap);
+
+            var oldTerraMap = m_terrainMap;
+            var oldForMap = m_treeMap;
+
+            int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
+
+            //Init New Map to all 5's
+            for (int x = 0; x < newMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < newMap.GetLength(1); y++)
+                {
+                    newMap[x, y] = 5;
+                }
+            }
+
+            //Add old map
+            for (int x = 0; x < oldTerraMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < oldTerraMap.GetLength(1); y++)
+                {
+                    newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
+                }
+            }
+
+            TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
+            SimulateTerrain(Samples);
+
+           // MapGrid.cellGap = CG;
         }
     }
     #endregion
+
+    private void UpdateMap(int[,] mapToUpdate)
+    {
+
+    }
 
     public void SimulateTerrain(int samples)
     {
         for (int i = 0; i < samples; i++)
         {
-            m_terrainMap = BuildTerrain(m_terrainMap);
+            m_terrainMap = BuildTerrain(m_terrainMap, update);
         }
 
-        for (int x = 0; x < MapSettings.MapWidth; x++)
+        for (int x = 0; x < m_terrainMap.GetLength(0); x++)
         {
-            for (int y = 0; y < MapSettings.MapHeight; y++)
+            for (int y = 0; y < m_terrainMap.GetLength(1); y++)
             {
                 m_treeMap[x, y] = 0;
 
                 if (m_terrainMap[x, y] == 1)
                 {
-                    TopMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
+                    if (update)
+                    {
+                    //TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) * m_iterations) / 2, -y + (m_terrainMap.GetLength(1) * m_iterations) / 2, 0), FiveTile);
+                    }
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), TopTile);
 
                     m_treeMap[x, y] = 9;
                 }
 
                 if (m_terrainMap[x, y] == 0)
                 {
-                    BottomMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), BottomTile);
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), BottomTile);
                     m_treeMap[x, y] = 0;
                 }
             }
@@ -171,49 +214,100 @@ public class MapBuilder : MonoBehaviour
         SimulateTrees(ForestSamples);
     }
 
-    private int[,] BuildTerrain(int[,] tempMap)
+    private int[,] BuildTerrain(int[,] tempMap, bool updatemap)
     {
-        int[,] newMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
+        int[,] updatedMap;
         int neighbor;
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
-        for (int x = 0; x < MapSettings.MapWidth; x++)
+        if (updatemap)
         {
-            for (int y = 0; y < MapSettings.MapHeight; y++)
+            updatedMap = new int[tempMap.GetLength(0), tempMap.GetLength(1)];
+            for (int x = 0; x < tempMap.GetLength(0); x++)
             {
-                neighbor = 0;
-                foreach (var b in bounds.allPositionsWithin)
+                for (int y = 0; y < tempMap.GetLength(1); y++)
                 {
-                    if (b.x == 0 && b.y == 0) continue;
-                    if (x + b.x >= 0 && x + b.x < MapSettings.MapWidth && y + b.y >= 0 && y + b.y < MapSettings.MapHeight)
+                    if (tempMap[x,y] == 5)
                     {
-                        neighbor += tempMap[x + b.x, y + b.y];
+                        tempMap[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
                     }
-                    else
+
+                    neighbor = 0;
+                    foreach (var b in bounds.allPositionsWithin)
                     {
-                        //Draw Border
-                        neighbor++;
+                        if (b.x == 0 && b.y == 0) continue;
+                        if (x + b.x >= 0 && x + b.x < tempMap.GetLength(0) && y + b.y >= 0 && y + b.y <tempMap.GetLength(1))
+                        {
+                            neighbor += tempMap[x + b.x, y + b.y];
+                        }
+                        else
+                        {
+                            //Draw Border
+                            //neighbor++;
+                        }
                     }
+                    if (tempMap[x, y] == 1)
+                    {
+                        if (neighbor < DeathLimit) updatedMap[x, y] = 0;
+                        else
+                        {
+                            updatedMap[x, y] = 1;
+                        }
+                    }
+                    if (tempMap[x, y] == 0)
+                    {
+                        if (neighbor > BirthLimit) updatedMap[x, y] = 1;
+                        else
+                        {
+                            updatedMap[x, y] = 0;
+                        }
+                    }
+
                 }
-                if (tempMap[x, y] == 1)
+            }
+        }
+        else
+        {
+            updatedMap = new int[m_terrainMap.GetLength(0), m_terrainMap.GetLength(1)];
+            for (int x = 0; x < MapSettings.MapWidth; x++)
+            {
+                for (int y = 0; y < MapSettings.MapHeight; y++)
                 {
-                    if (neighbor < DeathLimit) newMap[x, y] = 0;
-                    else
+                    neighbor = 0;
+                    foreach (var b in bounds.allPositionsWithin)
                     {
-                        newMap[x, y] = 1;
+                        if (b.x == 0 && b.y == 0) continue;
+                        if (x + b.x >= 0 && x + b.x < m_terrainMap.GetLength(0) && y + b.y >= 0 && y + b.y < m_terrainMap.GetLength(1))
+                        {
+                            neighbor += tempMap[x + b.x, y + b.y];
+                        }
+                        else
+                        {
+                            //Draw Border
+                            neighbor++;
+                        }
                     }
-                }
-                if (tempMap[x, y] == 0)
-                {
-                    if (neighbor > BirthLimit) newMap[x, y] = 1;
-                    else
+                    if (tempMap[x, y] == 1)
                     {
-                        newMap[x, y] = 0;
+                        if (neighbor < DeathLimit) updatedMap[x, y] = 0;
+                        else
+                        {
+                            updatedMap[x, y] = 1;
+                        }
+                    }
+                    if (tempMap[x, y] == 0)
+                    {
+                        if (neighbor > BirthLimit) updatedMap[x, y] = 1;
+                        else
+                        {
+                            updatedMap[x, y] = 0;
+                        }
                     }
                 }
             }
         }
 
-        return newMap;
+
+        return updatedMap;
 
 
     }

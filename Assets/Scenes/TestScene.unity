@@ -189,7 +189,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 20
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -306,7 +306,7 @@ Tilemap:
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 0, y: 0, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
-  m_TileOrientation: 0
+  m_TileOrientation: 6
   m_TileOrientationMatrix:
     e00: 1
     e01: 0
@@ -615,7 +615,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 10
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -677,7 +677,7 @@ Tilemap:
   m_Origin: {x: -3, y: -2, z: 0}
   m_Size: {x: 5, y: 4, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
-  m_TileOrientation: 0
+  m_TileOrientation: 6
   m_TileOrientationMatrix:
     e00: 1
     e01: 0
@@ -821,10 +821,11 @@ MonoBehaviour:
   TopTile: {fileID: 11400000, guid: f14087bf11969c84f84cbef4f93a24e6, type: 2}
   TreeTile: {fileID: 11400000, guid: 12457a563760fcb43806fdb5a03dad84, type: 2}
   BottomTile: {fileID: 11400000, guid: e23b2bd3acbc1634d9d6c8c5be5c2edf, type: 2}
+  FiveTile: {fileID: 11400000, guid: 1ac333a5ef4d1fb47a5c81c3d3f12542, type: 2}
   m_activeChance: 29
   BirthLimit: 3
   DeathLimit: 2
-  Samples: 2
+  Samples: 1
   ForestActiveChance: 39
   ForestBirthLimit: 3
   ForestDeathLimit: 6
