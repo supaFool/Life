@@ -106,7 +106,7 @@ public class MapBuilder : MonoBehaviour
             update = true;
             m_iterations++;
             m_currentCellGap =  m_iterations;
-            MapGrid.cellGap = new Vector3((float)m_iterations / 33f, (float)m_iterations / 33f, 0);
+            MapGrid.cellGap = new Vector3((float)m_iterations / (32f * 4), (float)m_iterations / (32f * 4), 0);
             //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
             Debug.Log(TopMap.cellGap);
 
@@ -133,7 +133,7 @@ public class MapBuilder : MonoBehaviour
                 }
             }
 
-            TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
+            //TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
             SimulateTerrain(Samples);
 
            // MapGrid.cellGap = CG;
