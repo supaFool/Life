@@ -9,8 +9,12 @@ public class MapBuilder : MonoBehaviour
     //How much space to add between grids After map is built
     private float m_cellGap = 1f;
     private float m_currentCellGap = 0;
-    private int m_iterations = 0;
+    private float m_iterations = 0;
     private bool update = false;
+    private float m_iterationMultiplier = 0f;
+    private float renderCounter = 0;
+    private float renderSpeed = 10000f;
+    private bool startRendering = false;
 
     #region Vars
     private MapSettings m_mapSettings;
@@ -83,9 +87,22 @@ public class MapBuilder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        renderCounter += renderSpeed * Time.deltaTime;
+        Debug.Log(renderCounter);
+            if (startRendering)
+            {
+            m_iterations++;
+                UpdateMap();
+            
+            }
+        if (renderCounter >= 1000)
+        {
+            renderCounter = 0;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
+            startRendering = true;
             update = false;
             Simulate();
             running = true;
@@ -94,6 +111,7 @@ public class MapBuilder : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
+            startRendering = false;
             ClearMap(true);
             running = false;
             m_iterations = 0;
@@ -102,57 +120,74 @@ public class MapBuilder : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
+            for (int i = 0; i < 10; i++)
+            {
+            UpdateMap();
+            }
+    }
+
+    private void UpdateMap()
+    {
+        update = true;
+        //m_iterations = m_iterations *= m_iterationMultiplier;
+        m_currentCellGap += m_iterations;
+        //MapGrid.cellGap = new Vector3((float)m_iterations * m_iterationMultiplier, (float)m_iterations * m_iterationMultiplier, 0);
+        MapGrid.cellGap = new Vector3(.75f, .75f, 0);
+        //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
+        Debug.Log(TopMap.cellGap);
+
+        var oldTerraMap = m_terrainMap;
+        var oldForMap = m_treeMap;
+
+        //int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
+        int[,] newMap = new int[oldTerraMap.GetLength(0), oldTerraMap.GetLength(1)];
+
+        //Init New Map to all 5's
+        for (int x = 0; x < newMap.GetLength(0); x++)
         {
-            update = true;
-            m_iterations++;
-            m_currentCellGap =  m_iterations;
-            MapGrid.cellGap = new Vector3((float)m_iterations / 33f, (float)m_iterations / 33f, 0);
-            //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
-            Debug.Log(TopMap.cellGap);
-
-            var oldTerraMap = m_terrainMap;
-            var oldForMap = m_treeMap;
-
-            int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
-
-            //Init New Map to all 5's
-            for (int x = 0; x < newMap.GetLength(0); x++)
+            for (int y = 0; y < newMap.GetLength(1); y++)
             {
-                for (int y = 0; y < newMap.GetLength(1); y++)
-                {
-                    newMap[x, y] = 5;
-                }
+                newMap[x, y] = 5;
             }
-
-            //Add old map
-            for (int x = 0; x < oldTerraMap.GetLength(0); x++)
-            {
-                for (int y = 0; y < oldTerraMap.GetLength(1); y++)
-                {
-                    newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
-                }
-            }
-
-            TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
-            SimulateTerrain(Samples);
-
-           // MapGrid.cellGap = CG;
         }
+
+        //Add old map
+        for (int x = 0; x < oldTerraMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < oldTerraMap.GetLength(1); y++)
+            {
+               // newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
+                newMap[x, y] = oldTerraMap[x, y];
+            }
+        }
+
+        //TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
+        SimulateTerrain(Samples);
+            SimulateTrees(ForestSamples);
+        for (int i = 0; i < 5; i++)
+        {
+        }
+        // MapGrid.cellGap = CG;
     }
     #endregion
 
-    private void UpdateMap(int[,] mapToUpdate)
+    #region Functions
+    private void SimulateTerrain(int samples)
     {
+        SampleMap(samples);
 
+        RenderMap();
     }
-
-    public void SimulateTerrain(int samples)
+    private void SampleMap(int samples)
     {
         for (int i = 0; i < samples; i++)
         {
+            //Update Terrain map for the amount of samples
             m_terrainMap = BuildTerrain(m_terrainMap, update);
         }
-
+    }
+    private void RenderMap()
+    {
         for (int x = 0; x < m_terrainMap.GetLength(0); x++)
         {
             for (int y = 0; y < m_terrainMap.GetLength(1); y++)
@@ -161,13 +196,12 @@ public class MapBuilder : MonoBehaviour
 
                 if (m_terrainMap[x, y] == 1)
                 {
-                    if (update)
+                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), FiveTile);
+                    var r = Random.Range(0, 100);
+                    if (r <= 3)
                     {
-                    //TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0) * m_iterations) / 2, -y + (m_terrainMap.GetLength(1) * m_iterations) / 2, 0), FiveTile);
-                    }
-                    TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), TopTile);
-
                     m_treeMap[x, y] = 9;
+                    }
                 }
 
                 if (m_terrainMap[x, y] == 0)
@@ -178,9 +212,9 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
-
-    public void SimulateTrees(int samples)
+    private void SimulateTrees(int samples)
     {
+
         for (int i = 0; i < samples; i++)
         {
             m_treeMap = BuildForest(m_treeMap);
@@ -192,33 +226,34 @@ public class MapBuilder : MonoBehaviour
 
                 if (m_treeMap[x, y] == 3)
                 {
-                    TreeMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TreeTile);
+                    TreeMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
                 }
             }
         }
     }
-
-    public void Simulate()
+    private void Simulate()
     {
         Debug.Log("Building Terrain");
         ClearMap(false);
-
+        InitMapGrid();
+        SimulateTerrain(Samples);
+        SimulateTrees(ForestSamples);
+    }
+    private void InitMapGrid()
+    {
         if (m_terrainMap == null)
         {
             m_terrainMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             m_treeMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
             InitPos();
         }
-
-        SimulateTerrain(Samples);
-        SimulateTrees(ForestSamples);
     }
-
     private int[,] BuildTerrain(int[,] tempMap, bool updatemap)
     {
         int[,] updatedMap;
         int neighbor;
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
+        #region UpdatedMap
         if (updatemap)
         {
             updatedMap = new int[tempMap.GetLength(0), tempMap.GetLength(1)];
@@ -226,7 +261,7 @@ public class MapBuilder : MonoBehaviour
             {
                 for (int y = 0; y < tempMap.GetLength(1); y++)
                 {
-                    if (tempMap[x,y] == 5)
+                    if (tempMap[x, y] == 5)
                     {
                         tempMap[x, y] = Random.Range(1, 101) < m_activeChance ? 1 : 0;
                     }
@@ -235,7 +270,7 @@ public class MapBuilder : MonoBehaviour
                     foreach (var b in bounds.allPositionsWithin)
                     {
                         if (b.x == 0 && b.y == 0) continue;
-                        if (x + b.x >= 0 && x + b.x < tempMap.GetLength(0) && y + b.y >= 0 && y + b.y <tempMap.GetLength(1))
+                        if (x + b.x >= 0 && x + b.x < tempMap.GetLength(0) && y + b.y >= 0 && y + b.y < tempMap.GetLength(1))
                         {
                             neighbor += tempMap[x + b.x, y + b.y];
                         }
@@ -265,6 +300,9 @@ public class MapBuilder : MonoBehaviour
                 }
             }
         }
+        #endregion
+
+        #region Not Update
         else
         {
             updatedMap = new int[m_terrainMap.GetLength(0), m_terrainMap.GetLength(1)];
@@ -305,7 +343,7 @@ public class MapBuilder : MonoBehaviour
                 }
             }
         }
-
+        #endregion
 
         return updatedMap;
 
@@ -317,8 +355,7 @@ public class MapBuilder : MonoBehaviour
         int neighbor;
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
 
-
-
+        #region Build Forest
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
@@ -350,14 +387,22 @@ public class MapBuilder : MonoBehaviour
                         newMap[x, y] = 3;
                     }
                 }
+
+                if (tempMap[x, y] == 4)
+                {
+                    if (neighbor > BirthLimit) newMap[x, y] = 3;
+                    else
+                    {
+                        newMap[x, y] = 4;
+                    }
+                }
             }
         }
 
-
+        #endregion
 
         return newMap;
     }
-
     private void InitPos()
     {
         Debug.Log("InitPos, Map Width = " + MapSettings.MapWidth);
@@ -383,7 +428,6 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
-
     private void ClearMap(bool v)
     {
         TopMap.ClearAllTiles();
@@ -396,11 +440,5 @@ public class MapBuilder : MonoBehaviour
             m_terrainMap = null;
         }
     }
-
-    private string NameZone(int zoneID)
-    {
-
-
-        return null;
-    }
+    #endregion
 }
