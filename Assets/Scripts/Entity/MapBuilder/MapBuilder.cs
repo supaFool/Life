@@ -11,7 +11,7 @@ public class MapBuilder : MonoBehaviour
     private float m_currentCellGap = 0;
     private float m_iterations = 0;
     private bool update = false;
-    private float m_iterationMultiplier = .0013f;
+    private float m_iterationMultiplier = 0f;
     private float renderCounter = 0;
     private float renderSpeed = 10000f;
     private bool startRendering = false;
@@ -131,14 +131,16 @@ public class MapBuilder : MonoBehaviour
         update = true;
         //m_iterations = m_iterations *= m_iterationMultiplier;
         m_currentCellGap += m_iterations;
-        MapGrid.cellGap = new Vector3((float)m_iterations * m_iterationMultiplier, (float)m_iterations * m_iterationMultiplier, 0);
+        //MapGrid.cellGap = new Vector3((float)m_iterations * m_iterationMultiplier, (float)m_iterations * m_iterationMultiplier, 0);
+        MapGrid.cellGap = new Vector3(.75f, .75f, 0);
         //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
         Debug.Log(TopMap.cellGap);
 
         var oldTerraMap = m_terrainMap;
         var oldForMap = m_treeMap;
 
-        int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
+        //int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
+        int[,] newMap = new int[oldTerraMap.GetLength(0), oldTerraMap.GetLength(1)];
 
         //Init New Map to all 5's
         for (int x = 0; x < newMap.GetLength(0); x++)
@@ -154,7 +156,8 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < oldTerraMap.GetLength(1); y++)
             {
-                newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
+               // newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
+                newMap[x, y] = oldTerraMap[x, y];
             }
         }
 
@@ -195,7 +198,7 @@ public class MapBuilder : MonoBehaviour
                 {
                     TopMap.SetTile(new Vector3Int(-x + (m_terrainMap.GetLength(0)) / 2, -y + (m_terrainMap.GetLength(1)) / 2, 0), FiveTile);
                     var r = Random.Range(0, 100);
-                    if (r <= 5)
+                    if (r <= 3)
                     {
                     m_treeMap[x, y] = 9;
                     }
