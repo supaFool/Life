@@ -3,7 +3,7 @@
     private string m_worldName;
 
     //Main Map Size
-    public static int MapWidth = 400 * (16/9);
+    public static int MapWidth = 400 * (16 / 9);
     public static int MapHeight = 200 * (16 / 9);
     public static int MapZLayers = 0;
 

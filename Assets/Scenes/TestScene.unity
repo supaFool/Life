@@ -433,7 +433,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -826,10 +826,10 @@ MonoBehaviour:
   BirthLimit: 3
   DeathLimit: 3
   Samples: 1
-  ForestActiveChance: 39
-  ForestBirthLimit: 3
+  ForestActiveChance: 13
+  ForestBirthLimit: 2
   ForestDeathLimit: 6
-  ForestSamples: 3
+  ForestSamples: 2
   MapSize: {x: 100, y: 100, z: 0}
   SamplesText: {fileID: 0}
 --- !u!114 &1501650117
