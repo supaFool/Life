@@ -6,21 +6,15 @@ public class MapBuilder : MonoBehaviour
 {
     [SerializeField]
     private Grid MapGrid;
-    //How much space to add between grids After map is built
-    private float m_cellGap = 1f;
-    private float m_currentCellGap = 0;
-    private float m_iterations = 0;
-    private bool update = false;
-    private float m_iterationMultiplier = 0f;
-    private float renderCounter = 0;
-    private float renderSpeed = 10000f;
-    private bool startRendering = false;
+    //private bool update = false; // Updates existing map if true, Creates a new map if false
+    private bool startRendering = false; // Starts the Map Gen loops
 
     #region Vars
+    #region GridSpacing vars
+    private float m_spacing = 0.75f;
+    #endregion
+
     private MapSettings m_mapSettings;
-    private MapTile m_mapTile;
-    //private Map m_map;
-    private Zone m_currentZone;
 
     [SerializeField]
     private Tilemap TopMap;
@@ -37,16 +31,14 @@ public class MapBuilder : MonoBehaviour
     [SerializeField]
     private Tile FiveTile;
 
-    private bool running;
-
     //Spawn Settings
     [Range(1, 100)]
     public int m_activeChance;
 
-    [Range(1, 8)]
+    [Range(1, 16)]
     public int BirthLimit;
 
-    [Range(1, 8)]
+    [Range(1, 16)]
     public int DeathLimit;
 
     [Range(1, 10)]
@@ -55,22 +47,18 @@ public class MapBuilder : MonoBehaviour
     [Range(1, 100)]
     public int ForestActiveChance;
 
-    [Range(1, 8)]
+    [Range(1, 16)]
     public int ForestBirthLimit;
 
-    [Range(1, 8)]
+    [Range(1, 16)]
     public int ForestDeathLimit;
 
     [Range(1, 10)]
     public int ForestSamples;
-    private int counter = 0;
 
+    private bool m_newMap;
     private int[,] m_terrainMap;
     private int[,] m_treeMap;
-    public Vector3Int MapSize;
-
-    public int GridSize { get => m_terrainMap.Length; }
-
     #endregion
 
     #region UI Vars
@@ -81,65 +69,64 @@ public class MapBuilder : MonoBehaviour
     private void Awake()
     {
         m_mapSettings = new MapSettings();
-        m_currentZone = new Zone("TestZone");
+        m_newMap = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        renderCounter += renderSpeed * Time.deltaTime;
-        Debug.Log(renderCounter);
-            if (startRendering)
-            {
-            m_iterations++;
-                UpdateMap();
-            
-            }
-        if (renderCounter >= 1000)
+        if (m_newMap && startRendering)
         {
-            renderCounter = 0;
+            Simulate();
+        }
+
+        if (startRendering)
+        {
+            //m_iterations++;
+            UpdateMap();
         }
 
         if (Input.GetMouseButtonDown(0))
         {
-            startRendering = true;
-            update = false;
-            Simulate();
-            running = true;
-            //SimulateTrees(ForestSamples);
+
+            if (startRendering == true)
+            {
+                startRendering = false;
+            }
+            else
+            {
+                startRendering = true;
+            }
+            if (m_newMap && startRendering)
+            {
+                Simulate();
+                m_newMap = false;
+            }
+            //update = false;
+            //Simulate();
         }
 
         if (Input.GetMouseButtonDown(1))
         {
             startRendering = false;
+            m_newMap = true;
             ClearMap(true);
-            running = false;
-            m_iterations = 0;
-            m_currentCellGap = 0;
+            //m_iterations = 0;
+            //m_currentCellGap = 0;
             MapGrid.cellGap = new Vector3(0, 0, 0);
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-            for (int i = 0; i < 10; i++)
-            {
-            UpdateMap();
-            }
     }
 
     private void UpdateMap()
     {
-        update = true;
-        //m_iterations = m_iterations *= m_iterationMultiplier;
-        m_currentCellGap += m_iterations;
-        //MapGrid.cellGap = new Vector3((float)m_iterations * m_iterationMultiplier, (float)m_iterations * m_iterationMultiplier, 0);
-        MapGrid.cellGap = new Vector3(.75f, .75f, 0);
-        //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
+        //update = true;
+        //m_currentCellGap += m_iterations;
+        MapGrid.cellGap = new Vector3(m_spacing, m_spacing, 0);
         Debug.Log(TopMap.cellGap);
 
         var oldTerraMap = m_terrainMap;
         var oldForMap = m_treeMap;
 
-        //int[,] newMap = new int[oldTerraMap.GetLength(0) + (int)m_currentCellGap, oldTerraMap.GetLength(1) + (int)m_currentCellGap];
         int[,] newMap = new int[oldTerraMap.GetLength(0), oldTerraMap.GetLength(1)];
 
         //Init New Map to all 5's
@@ -156,18 +143,11 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < oldTerraMap.GetLength(1); y++)
             {
-               // newMap[x + (int)m_currentCellGap, y + (int)m_currentCellGap] = oldTerraMap[x, y];
                 newMap[x, y] = oldTerraMap[x, y];
             }
         }
-
-        //TopMap.GetComponent<Tilemap>().size.Scale(new Vector3Int(m_iterations, m_iterations, 0));
         SimulateTerrain(Samples);
-            SimulateTrees(ForestSamples);
-        for (int i = 0; i < 5; i++)
-        {
-        }
-        // MapGrid.cellGap = CG;
+        SimulateTrees(ForestSamples);
     }
     #endregion
 
@@ -183,7 +163,7 @@ public class MapBuilder : MonoBehaviour
         for (int i = 0; i < samples; i++)
         {
             //Update Terrain map for the amount of samples
-            m_terrainMap = BuildTerrain(m_terrainMap, update);
+            m_terrainMap = BuildTerrain(m_terrainMap, false);
         }
     }
     private void RenderMap()
@@ -200,7 +180,7 @@ public class MapBuilder : MonoBehaviour
                     var r = Random.Range(0, 100);
                     if (r <= 3)
                     {
-                    m_treeMap[x, y] = 9;
+                        m_treeMap[x, y] = 9;
                     }
                 }
 
@@ -253,6 +233,7 @@ public class MapBuilder : MonoBehaviour
         int[,] updatedMap;
         int neighbor;
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
+
         #region UpdatedMap
         if (updatemap)
         {
@@ -321,7 +302,7 @@ public class MapBuilder : MonoBehaviour
                         else
                         {
                             //Draw Border
-                            neighbor++;
+                            //neighbor++;
                         }
                     }
                     if (tempMap[x, y] == 1)
@@ -346,8 +327,6 @@ public class MapBuilder : MonoBehaviour
         #endregion
 
         return updatedMap;
-
-
     }
     private int[,] BuildForest(int[,] tempMap)
     {
