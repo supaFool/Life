@@ -11,7 +11,7 @@ public class MapBuilder : MonoBehaviour
     private float m_currentCellGap = 0;
     private float m_iterations = 0;
     private bool update = false;
-    private float m_iterationMultiplier = -.51f;
+    private float m_iterationMultiplier = .0013f;
     private float renderCounter = 0;
     private float renderSpeed = 10000f;
     private bool startRendering = false;
@@ -129,9 +129,9 @@ public class MapBuilder : MonoBehaviour
     private void UpdateMap()
     {
         update = true;
-        m_iterations += m_iterationMultiplier;
-        m_currentCellGap = m_iterations;
-        MapGrid.cellGap = new Vector3((float)m_iterations / (32f * 4), (float)m_iterations / (32f * 4), 0);
+        //m_iterations = m_iterations *= m_iterationMultiplier;
+        m_currentCellGap += m_iterations;
+        MapGrid.cellGap = new Vector3((float)m_iterations * m_iterationMultiplier, (float)m_iterations * m_iterationMultiplier, 0);
         //TopMap.size.Set(m_terrainMap.GetLength(0), m_terrainMap.GetLength(1), 0);
         Debug.Log(TopMap.cellGap);
 
