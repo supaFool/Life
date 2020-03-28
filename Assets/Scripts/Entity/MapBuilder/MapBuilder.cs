@@ -6,28 +6,38 @@ public class MapBuilder : MonoBehaviour
 {
     [SerializeField]
     private Grid MapGrid;
+
     //private bool update = false; // Updates existing map if true, Creates a new map if false
     private bool startRendering = false; // Starts the Map Gen loops
 
     #region Vars
+
     #region GridSpacing vars
-    private float m_spacing = 0.75f;
-    #endregion
+
+    private float m_spacing = 0.0f;//Space between each tile
+
+    #endregion GridSpacing vars
 
     private MapSettings m_mapSettings;
 
     [SerializeField]
     private Tilemap TopMap;
+
     [SerializeField]
     private Tilemap BottomMap;
+
     [SerializeField]
     private Tilemap TreeMap;
+
     [SerializeField]
     private Tile TopTile;
+
     [SerializeField]
     private Tile TreeTile;
+
     [SerializeField]
     private Tile BottomTile;
+
     [SerializeField]
     private Tile FiveTile;
 
@@ -59,13 +69,11 @@ public class MapBuilder : MonoBehaviour
     private bool m_newMap;
     private int[,] m_terrainMap;
     private int[,] m_treeMap;
-    #endregion
 
-    #region UI Vars
-    public Text SamplesText;
-    #endregion
+    #endregion Vars
 
     #region Overrides
+
     private void Awake()
     {
         m_mapSettings = new MapSettings();
@@ -73,7 +81,7 @@ public class MapBuilder : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (m_newMap && startRendering)
         {
@@ -88,7 +96,6 @@ public class MapBuilder : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-
             if (startRendering == true)
             {
                 startRendering = false;
@@ -149,15 +156,18 @@ public class MapBuilder : MonoBehaviour
         SimulateTerrain(Samples);
         SimulateTrees(ForestSamples);
     }
-    #endregion
+
+    #endregion Overrides
 
     #region Functions
+
     private void SimulateTerrain(int samples)
     {
         SampleMap(samples);
 
         RenderMap();
     }
+
     private void SampleMap(int samples)
     {
         for (int i = 0; i < samples; i++)
@@ -166,6 +176,7 @@ public class MapBuilder : MonoBehaviour
             m_terrainMap = BuildTerrain(m_terrainMap, false);
         }
     }
+
     private void RenderMap()
     {
         for (int x = 0; x < m_terrainMap.GetLength(0); x++)
@@ -192,9 +203,9 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
+
     private void SimulateTrees(int samples)
     {
-
         for (int i = 0; i < samples; i++)
         {
             m_treeMap = BuildForest(m_treeMap);
@@ -203,7 +214,6 @@ public class MapBuilder : MonoBehaviour
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
             {
-
                 if (m_treeMap[x, y] == 3)
                 {
                     TreeMap.SetTile(new Vector3Int(-x + MapSettings.MapWidth / 2, -y + MapSettings.MapHeight / 2, 0), TopTile);
@@ -211,6 +221,7 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
+
     private void Simulate()
     {
         Debug.Log("Building Terrain");
@@ -219,6 +230,7 @@ public class MapBuilder : MonoBehaviour
         SimulateTerrain(Samples);
         SimulateTrees(ForestSamples);
     }
+
     private void InitMapGrid()
     {
         if (m_terrainMap == null)
@@ -228,6 +240,7 @@ public class MapBuilder : MonoBehaviour
             InitPos();
         }
     }
+
     private int[,] BuildTerrain(int[,] tempMap, bool updatemap)
     {
         int[,] updatedMap;
@@ -235,6 +248,7 @@ public class MapBuilder : MonoBehaviour
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
 
         #region UpdatedMap
+
         if (updatemap)
         {
             updatedMap = new int[tempMap.GetLength(0), tempMap.GetLength(1)];
@@ -277,13 +291,14 @@ public class MapBuilder : MonoBehaviour
                             updatedMap[x, y] = 0;
                         }
                     }
-
                 }
             }
         }
-        #endregion
+
+        #endregion UpdatedMap
 
         #region Not Update
+
         else
         {
             updatedMap = new int[m_terrainMap.GetLength(0), m_terrainMap.GetLength(1)];
@@ -324,10 +339,12 @@ public class MapBuilder : MonoBehaviour
                 }
             }
         }
-        #endregion
+
+        #endregion Not Update
 
         return updatedMap;
     }
+
     private int[,] BuildForest(int[,] tempMap)
     {
         int[,] newMap = new int[MapSettings.MapWidth, MapSettings.MapHeight];
@@ -335,6 +352,7 @@ public class MapBuilder : MonoBehaviour
         BoundsInt bounds = new BoundsInt(-1, -1, 0, 3, 3, 1);
 
         #region Build Forest
+
         for (int x = 0; x < MapSettings.MapWidth; x++)
         {
             for (int y = 0; y < MapSettings.MapHeight; y++)
@@ -378,10 +396,11 @@ public class MapBuilder : MonoBehaviour
             }
         }
 
-        #endregion
+        #endregion Build Forest
 
         return newMap;
     }
+
     private void InitPos()
     {
         Debug.Log("InitPos, Map Width = " + MapSettings.MapWidth);
@@ -393,6 +412,7 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
+
     private void InitTreeMap()
     {
         for (int x = 0; x < MapSettings.MapWidth; x++)
@@ -407,6 +427,7 @@ public class MapBuilder : MonoBehaviour
             }
         }
     }
+
     private void ClearMap(bool v)
     {
         TopMap.ClearAllTiles();
@@ -419,5 +440,6 @@ public class MapBuilder : MonoBehaviour
             m_terrainMap = null;
         }
     }
-    #endregion
+
+    #endregion Functions
 }
