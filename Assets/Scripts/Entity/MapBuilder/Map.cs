@@ -3,11 +3,12 @@
 public class Map : MonoBehaviour
 {
     private Vector3Int m_zoneSize;
+
     //A zone is a biome grid of the entire map
     private Zone[] m_localZones;
+
     private int m_minSize = 50;
     private int m_maxSize = 65;
-
 
     private void Awake()
     {
@@ -22,15 +23,13 @@ public class Map : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
-
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
     }
 
     public string TEST()
