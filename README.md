@@ -4,7 +4,7 @@
 
 ## Uses Unity Build 2019.X.X
 
-### Implemented GamePlay Instructions
-#### Left Click Start/Stop Map Generator
-#### Right Click Reset Map Reset Map Generator
+#### Implemented GamePlay Instructions
+Left Click Start/Stop Map Generator
+Right Click Reset Map Reset Map Generator
  
