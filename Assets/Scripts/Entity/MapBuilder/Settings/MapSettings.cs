@@ -2,7 +2,6 @@
 {
     private string m_worldName;
 
-    //Main Map Size
     private int mapWidth;
 
     private int mapHeight;
