@@ -1,0 +1,11 @@
+{
+    "editor.wordWrap": "on",
+    "editor.autoClosingBrackets": "always",
+    "editor.definitionLinkOpensInPeek": true,
+    "editor.mouseWheelZoom": true,
+    "editor.parameterHints.cycle": true,
+    "editor.tabCompletion": "on",
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": true,
+    "editor.formatOnSave": true
+}
