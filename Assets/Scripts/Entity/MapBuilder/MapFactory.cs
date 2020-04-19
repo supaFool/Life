@@ -1,18 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class MapFactory : IMap
+public class MapFactory : MonoBehaviour
 {
+
     private MapSettings settings;
+    private MapBuilder builder;
 
     public MapFactory()
     {
         settings = new MapSettings();
-    }
-
-    public void Simulate(int[] samples)
-    {
-        throw new System.NotImplementedException();
     }
 }
